@@ -325,7 +325,7 @@ export const WalletPage: React.FC = () => {
                <div className="space-y-4">
                    <div>
                        <label className="text-xs font-bold text-gray-400 ml-1 block mb-2 uppercase">Payment Method</label>
-                       <select value={method} onChange={e => setMethod(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-medium text-sm">
+                       <select value={method} onChange={e => setMethod(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-medium text-sm text-gray-900">
                             <option value="BKASH">Bkash</option>
                             <option value="NAGAD">Nagad</option>
                             <option value="ROCKET">Rocket</option>
@@ -334,12 +334,12 @@ export const WalletPage: React.FC = () => {
                    
                    <div>
                        <label className="text-xs font-bold text-gray-400 ml-1 block mb-2 uppercase">Amount</label>
-                       <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm" />
+                       <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm text-gray-900" />
                    </div>
 
                    <div>
                        <label className="text-xs font-bold text-gray-400 ml-1 block mb-2 uppercase">Wallet Number</label>
-                       <input type="text" value={number} onChange={e => setNumber(e.target.value)} placeholder="017..." className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm" />
+                       <input type="text" value={number} onChange={e => setNumber(e.target.value)} placeholder="017..." className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm text-gray-900" />
                    </div>
 
                    {tab === 'JOB' && (
@@ -480,7 +480,7 @@ export const TaskListPage: React.FC = () => {
 
                         <div className="space-y-4">
                             <h3 className="font-bold text-sm">Submit Proof</h3>
-                            <input type="text" placeholder="Enter Proof Link / Text" value={proof} onChange={e => setProof(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-medium text-sm" />
+                            <input type="text" placeholder="Enter Proof Link / Text" value={proof} onChange={e => setProof(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-medium text-sm text-gray-900" />
                             <div className="border-2 border-dashed border-gray-200 p-8 rounded-2xl text-center text-gray-400">
                                 <UploadCloud className="mx-auto mb-2"/>
                                 <span className="text-xs">Upload Screenshot (Mock)</span>
@@ -543,7 +543,7 @@ export const QuizPage: React.FC = () => {
             ) : (
                 <div className="w-full bg-slate-50 p-8 rounded-[2rem] shadow-sm border border-gray-100 text-center">
                     <p className="text-4xl font-black text-gray-800 mb-8">{q.a} + {q.b} = ?</p>
-                    <input type="number" value={ans} onChange={e => setAns(e.target.value)} className="w-full p-4 text-center text-2xl bg-white rounded-2xl mb-6 shadow-sm outline-none font-bold" placeholder="?" />
+                    <input type="number" value={ans} onChange={e => setAns(e.target.value)} className="w-full p-4 text-center text-2xl bg-white rounded-2xl mb-6 shadow-sm outline-none font-bold text-gray-900" placeholder="?" />
                     <button onClick={handleAnswer} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-emerald-200 z-10 relative">Submit</button>
                 </div>
             )}
@@ -678,12 +678,12 @@ export const PremiumPage: React.FC = () => {
                             </div>
                             
                             <h4 className="font-bold text-sm mt-4 text-gray-700">Submit Payment Details</h4>
-                            <select className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none text-sm font-medium">
+                            <select className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none text-sm font-medium text-gray-900">
                                 <option>Bkash</option>
                                 <option>Nagad</option>
                             </select>
-                            <input type="text" placeholder="Sender Number" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm"/>
-                            <input type="text" placeholder="Transaction ID" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm"/>
+                            <input type="text" placeholder="Sender Number" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm text-gray-900"/>
+                            <input type="text" placeholder="Transaction ID" className="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-mono text-sm text-gray-900"/>
                             <button className="w-full bg-yellow-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-yellow-200 hover:bg-yellow-600 transition transform active:scale-95 mt-4 z-10 relative">Activate Account</button>
                         </div>
                     </div>
