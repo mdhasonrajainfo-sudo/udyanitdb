@@ -1,3 +1,4 @@
+
 export enum UserRole {
   USER = 'USER',
   ADMIN = 'ADMIN'
@@ -14,7 +15,7 @@ export interface User {
   phone: string; // Used as ID
   email: string;
   password: string;
-  refCode: string;
+  refCode: string; // Numeric only now
   uplineCode: string; // Who referred them
   status: UserStatus;
   balanceFree: number;
@@ -22,6 +23,13 @@ export interface User {
   joinDate: string;
   isBlocked: boolean;
   refBonusReceived: number;
+  quizBalance: number; // New: For Referral Quiz
+  // New Stats
+  withdrawCount: number; // To limit free users to 1 withdrawal
+  totalWithdraw: number;
+  todayIncome: number;
+  totalIncome: number;
+  profilePic?: string;
 }
 
 export interface Task {
@@ -32,7 +40,7 @@ export interface Task {
   image: string;
   link: string;
   type: 'FREE' | 'PREMIUM';
-  category: 'YOUTUBE' | 'FACEBOOK' | 'TIKTOK' | 'GMAIL';
+  category: 'YOUTUBE' | 'FACEBOOK' | 'TIKTOK' | 'GMAIL' | 'INSTAGRAM' | 'OTHER';
   limitPerDay?: number;
 }
 
@@ -45,6 +53,8 @@ export interface TaskSubmission {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   date: string;
   amount: number;
+  taskTitle?: string;
+  category?: string; // To filter in Social Management
 }
 
 export interface Withdrawal {
@@ -53,8 +63,29 @@ export interface Withdrawal {
   amount: number;
   method: 'BKASH' | 'NAGAD' | 'ROCKET';
   number: string;
-  type: 'MAIN' | 'JOB';
+  type: 'FREE_WALLET' | 'PREMIUM_WALLET';
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  date: string;
+}
+
+export interface JobWithdrawal {
+  id: string;
+  userId: string;
+  jobType: string;
+  points: number;
+  amountBDT: number;
+  walletNumber: string; // User's whatsapp usually
+  proofImage: string;
+  details: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  date: string;
+}
+
+export interface IncomeLog {
+  id: string;
+  userId: string;
+  amount: number;
+  source: string; // 'Task', 'Referral', 'Bonus'
   date: string;
 }
 
@@ -67,6 +98,27 @@ export interface Ticket {
   date: string;
 }
 
+export interface PremiumRequest {
+  id: string;
+  userId: string;
+  method: string;
+  senderNumber: string;
+  trxId: string;
+  amount: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  date: string;
+}
+
+export interface Notification {
+  id: string;
+  userId?: string; // If null, it's a global admin message
+  title: string;
+  message: string;
+  type: 'ADMIN' | 'INCOME' | 'SYSTEM';
+  date: string;
+  isRead: boolean;
+}
+
 export interface Settings {
   companyName: string;
   notice: string;
@@ -77,6 +129,33 @@ export interface Settings {
   whatsappLink: string;
   premiumCost: number;
   refBonus: number;
-  contactNumber: string;
+  contactNumber: string; // Used for payments
   quizReward: number;
+  jobPointRate: number; 
+  darkMode: boolean;
+  privacyPolicy: string;
+  
+  // New Admin Settings
+  regBonus: number;
+  isPremiumActive: boolean;
+  
+  // Task Settings
+  dailyFreeTaskLimit: number;
+  dailyPremiumTaskLimit: number;
+  isTaskSystemActive: boolean;
+
+  // Social Rates
+  gmailRate: number;
+  facebookRate: number;
+  instagramRate: number;
+  tiktokRate: number;
+  
+  // Support Links
+  premiumGroupLink1: string;
+  premiumGroupLink2: string;
+  premiumGroupLink3: string;
+  supportNumber: string;
+
+  // Images
+  sliderImages: string[];
 }

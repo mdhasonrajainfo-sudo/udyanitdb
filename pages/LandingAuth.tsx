@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +8,7 @@ import {
   Download, Youtube, Facebook, MessageCircle, ArrowRight, ArrowLeft,
   Lock, PlayCircle, Star, Shield, CheckCircle, 
   Instagram, Phone, Video, Headphones, User, Globe, Users,
-  Mail, Send, AlertCircle
+  Mail, Send, AlertCircle, Key
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -269,7 +270,7 @@ export const SupportPage: React.FC = () => {
         <div className="min-h-screen bg-slate-50 max-w-md mx-auto flex flex-col relative">
             {/* Clean Header - Not Sticky */}
             <div className="bg-white p-4 flex items-center gap-3 border-b border-gray-100 shadow-sm z-30">
-                <button onClick={() => navigate('/')} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition"><ArrowLeft size={20} className="text-gray-700"/></button>
+                <button onClick={() => currentUser ? navigate('/user/home') : navigate('/')} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition"><ArrowLeft size={20} className="text-gray-700"/></button>
                 <div>
                      <h1 className="text-lg font-bold text-gray-800">Support Center</h1>
                      <p className="text-xs text-gray-500">We are here to help you</p>
@@ -330,6 +331,8 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
   const [pass, setPass] = useState('');
+  const [adminCode, setAdminCode] = useState('');
+  const [showAdminAuth, setShowAdminAuth] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -337,14 +340,29 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     await new Promise(r => setTimeout(r, 800)); 
     
-    if(adminLogin(phone, pass)) {
-      navigate('/admin/dashboard');
-      return;
+    // Check if it's the admin credentials first
+    if(phone === '01772209016' && pass === '123456') {
+        setIsLoading(false);
+        setShowAdminAuth(true); // Trigger step 2
+        return;
     }
+
     const success = await login(phone, pass);
     setIsLoading(false);
     if (success) navigate('/user/home');
     else alert("Invalid Credentials");
+  };
+
+  const handleAdminVerify = (e: React.FormEvent) => {
+      e.preventDefault();
+      // Hardcoded verification for admin security code as per instructions "1-6"
+      if(adminCode === '123456') {
+          if(adminLogin(phone, pass)) {
+              navigate('/admin/dashboard');
+          }
+      } else {
+          alert("Wrong Security Code!");
+      }
   };
 
   return (
@@ -363,26 +381,46 @@ export const LoginPage: React.FC = () => {
          <p className="text-gray-400 mt-2 font-medium">Please sign in to {settings.companyName}</p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-5">
-        <div className="relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-             <Phone size={20} />
-          </div>
-          <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-medium text-gray-900" placeholder="WhatsApp Number" required />
-        </div>
-        <div className="relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-             <Lock size={20} />
-          </div>
-          <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-medium text-gray-900" placeholder="Password" required />
-        </div>
-        <div className="text-right">
-           <button type="button" className="text-xs text-emerald-600 font-bold hover:underline">Forgot Password?</button>
-        </div>
-        <button type="submit" disabled={isLoading} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-emerald-200 text-lg hover:scale-[1.02] transition flex justify-center active:scale-95 items-center gap-2">
-            {isLoading ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><Smartphone size={20}/> Sign In</>}
-        </button>
-      </form>
+      {!showAdminAuth ? (
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                 <Phone size={20} />
+              </div>
+              <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-medium text-gray-900" placeholder="WhatsApp Number" required />
+            </div>
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                 <Lock size={20} />
+              </div>
+              <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-medium text-gray-900" placeholder="Password" required />
+            </div>
+            <div className="text-right">
+               <button type="button" className="text-xs text-emerald-600 font-bold hover:underline">Forgot Password?</button>
+            </div>
+            <button type="submit" disabled={isLoading} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-emerald-200 text-lg hover:scale-[1.02] transition flex justify-center active:scale-95 items-center gap-2">
+                {isLoading ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><Smartphone size={20}/> Sign In</>}
+            </button>
+          </form>
+      ) : (
+          <form onSubmit={handleAdminVerify} className="space-y-5 animate-in fade-in zoom-in duration-300">
+              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-center mb-4">
+                  <p className="text-yellow-800 font-bold text-sm">Admin Security Check</p>
+                  <p className="text-xs text-yellow-600">Please enter the security code</p>
+              </div>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Key size={20} />
+                </div>
+                <input type="password" value={adminCode} onChange={e => setAdminCode(e.target.value)} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-medium text-gray-900 text-center tracking-widest" placeholder="1-6 Code" required />
+              </div>
+              <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl text-lg hover:scale-[1.02] transition flex justify-center active:scale-95 items-center gap-2">
+                  Verify & Login
+              </button>
+              <button type="button" onClick={() => setShowAdminAuth(false)} className="w-full text-gray-500 text-sm font-bold hover:underline">Cancel</button>
+          </form>
+      )}
+
       <div className="mt-10 text-center">
         <p className="text-sm text-gray-500 font-medium">Don't have an account? <span onClick={() => navigate('/register')} className="text-emerald-600 font-bold cursor-pointer hover:underline">Create Account</span></p>
       </div>
@@ -391,12 +429,35 @@ export const LoginPage: React.FC = () => {
 };
 
 export const RegisterPage: React.FC = () => {
-  const { register, settings } = useStore();
+  const { register, settings, users } = useStore();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '', refCode: '' });
+  const [refName, setRefName] = useState<string | null>(null);
+  const [isValidRef, setIsValidRef] = useState(false);
+
+  // Dynamic Referral Lookup
+  useEffect(() => {
+      if(formData.refCode.length >= 6) { // Assuming ref codes are roughly 6 chars
+          const matchedUser = users.find(u => u.refCode === formData.refCode);
+          if(matchedUser) {
+              setRefName(matchedUser.name);
+              setIsValidRef(true);
+          } else {
+              setRefName(null);
+              setIsValidRef(false);
+          }
+      } else {
+          setRefName(null);
+          setIsValidRef(false);
+      }
+  }, [formData.refCode, users]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!isValidRef) {
+        alert("Invalid Referral Code! Registration cannot proceed.");
+        return;
+    }
     const success = await register(formData);
     if (success) {
       alert("Registration Successful!");
@@ -442,12 +503,36 @@ export const RegisterPage: React.FC = () => {
         
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><Users size={20}/></div>
-          <input type="text" placeholder="Referral Code (Optional)" onChange={e => setFormData({...formData, refCode: e.target.value})} className="w-full p-4 pl-12 border-none bg-white rounded-2xl shadow-sm outline-none font-medium text-gray-900" required />
+          <input 
+            type="text" 
+            placeholder="Referral Code (Required)" 
+            onChange={e => setFormData({...formData, refCode: e.target.value})} 
+            className={`w-full p-4 pl-12 border-2 bg-white rounded-2xl shadow-sm outline-none font-medium text-gray-900 transition ${formData.refCode.length > 0 ? (isValidRef ? 'border-emerald-500' : 'border-red-500') : 'border-transparent'}`}
+            required 
+          />
+          {formData.refCode.length > 0 && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  {isValidRef ? <CheckCircle size={20} className="text-emerald-500"/> : <AlertCircle size={20} className="text-red-500"/>}
+              </div>
+          )}
         </div>
         
-        <p className="text-xs text-gray-400 ml-1">Use 1-6 if you don't have a referral code.</p>
+        {/* Dynamic Name Display */}
+        {formData.refCode.length > 0 && (
+            <div className={`text-center text-xs font-bold py-2 rounded-lg ${isValidRef ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                {isValidRef ? `Referred by: ${refName}` : 'Invalid Referral Code'}
+            </div>
+        )}
+        
+        {!isValidRef && formData.refCode.length === 0 && (
+             <p className="text-xs text-gray-400 ml-1">Admin Default Code: 123456</p>
+        )}
 
-        <button type="submit" className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-xl mt-4 hover:scale-[1.02] transition active:scale-95 flex items-center justify-center gap-2">
+        <button 
+            type="submit" 
+            disabled={!isValidRef}
+            className={`w-full text-white py-4 rounded-2xl font-bold shadow-xl mt-4 hover:scale-[1.02] transition active:scale-95 flex items-center justify-center gap-2 ${isValidRef ? 'bg-gray-900' : 'bg-gray-400 cursor-not-allowed'}`}
+        >
             <UserPlus size={20}/> Sign Up
         </button>
       </form>
