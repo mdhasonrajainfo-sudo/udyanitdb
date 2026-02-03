@@ -1,155 +1,286 @@
 
-export type UserRole = 'USER' | 'ADMIN';
 
-export type UserStatus = 'FREE' | 'PREMIUM';
+export type AccountType = 'FREE' | 'PREMIUM';
+export type UserStatus = 'ACTIVE' | 'BLOCKED';
+export type TaskStatus = 'PENDING' | 'WAITING_RECOVERY' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'REQUESTED' | 'DETAILS_PROVIDED' | 'CREATED_BY_USER' | 'RECOVERY_PROVIDED' | 'SUBMITTED_FINAL';
+
+export type WalletType = 'MAIN' | 'FREE'; 
 
 export interface User {
   id: string;
   name: string;
-  phone: string; // Used as ID
+  whatsapp: string;
   email: string;
   password: string;
-  refCode: string; // Numeric only now
-  uplineCode: string; // Who referred them
+  referralCode: string;
+  referrerId?: string;
+  accountType: AccountType;
+  joiningDate: string;
   status: UserStatus;
-  balanceFree: number;
-  balancePremium: number;
-  joinDate: string;
-  isBlocked: boolean;
-  refBonusReceived: number;
-  quizBalance: number; // New: For Referral Quiz
-  // New Stats
-  withdrawCount: number; // To limit free users to 1 withdrawal
-  totalWithdraw: number;
-  todayIncome: number;
-  totalIncome: number;
-  profilePic?: string;
+  isAdminAccess?: boolean; 
+  
+  // Wallets
+  balanceMain: number; // Premium Income
+  balanceFree: number; // Free Income
+  
+  // Holding/Pending
+  pendingReferralBonus: number; 
+  
+  // Deprecated
+  balanceJob?: number; 
+  balanceRegBonus?: number; 
+  balancePremRef?: number; 
+  balanceReferral?: number; 
+
+  profileImage?: string;
 }
 
 export interface Task {
   id: string;
   title: string;
   description: string;
-  amount: number;
   image: string;
-  link: string;
-  type: 'FREE' | 'PREMIUM';
-  category: 'YOUTUBE' | 'FACEBOOK' | 'TIKTOK' | 'GMAIL' | 'INSTAGRAM' | 'OTHER';
-  limitPerDay?: number;
+  amount: number;
+  totalSlots: number;
+  filledSlots: number;
+  type: 'FREE' | 'PAID';
+  link?: string;
+  videoUrl?: string;
 }
 
 export interface TaskSubmission {
   id: string;
   userId: string;
   taskId: string;
-  proofLink: string;
-  details: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  taskTitle: string;
+  proofText: string;
+  screenshotLink: string;
+  status: TaskStatus;
+  submittedAt: string;
+  amount: number; 
+}
+
+export interface SocialSell {
+  id: string;
+  type: 'GMAIL' | 'FACEBOOK' | 'INSTAGRAM' | 'TIKTOK';
+  userId: string;
+  userName: string;
+  accountIdentifier: string; 
+  password?: string;
+  uid?: string;
+  twoFactorCode?: string;
+  rate: number;
+  status: TaskStatus;
   date: string;
+}
+
+export interface GmailOrder {
+  id: string;
+  userId: string;
+  userName: string;
+  status: TaskStatus;
+  requestDate: string;
+  userMessage?: string;
+  adminProvidedEmail?: string;
+  adminProvidedPassword?: string;
+  recoveryEmail?: string;
+}
+
+export interface JobWithdrawMethod {
+  id: string;
+  title: string; 
+  walletLabel: string; 
+  minAmount: number;
+  instruction?: string;
+  isActive?: boolean;
+}
+
+export interface JobWithdrawRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  userPhone: string;
+  walletNumber: string; 
+  jobMethodId: string; 
+  jobMethodName: string; 
+  amountCoins: string; // New: User inputs coin/dollar amount
+  screenshotLink: string;
+  status: TaskStatus;
+  date: string;
+}
+
+export interface WithdrawRequest {
+  id: string;
+  userId: string;
+  userName: string;
   amount: number;
-  taskTitle?: string;
-  category?: string; // To filter in Social Management
-}
-
-export interface Withdrawal {
-  id: string;
-  userId: string;
-  amount: number;
-  method: 'BKASH' | 'NAGAD' | 'ROCKET';
-  number: string;
-  type: 'FREE_WALLET' | 'PREMIUM_WALLET';
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  date: string;
-}
-
-export interface JobWithdrawal {
-  id: string;
-  userId: string;
-  jobType: string;
-  points: number;
-  amountBDT: number;
-  walletNumber: string; // User's whatsapp usually
-  proofImage: string;
-  details: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  date: string;
-}
-
-export interface IncomeLog {
-  id: string;
-  userId: string;
-  amount: number;
-  source: string; // 'Task', 'Referral', 'Bonus'
-  date: string;
-}
-
-export interface Ticket {
-  id: string;
-  userId: string;
-  subject: string;
-  message: string;
-  status: 'OPEN' | 'CLOSED';
-  date: string;
+  walletType: WalletType;
+  fee: number;
+  finalAmount: number;
+  status: TaskStatus;
+  requestDate: string;
+  paymentMethod: string;
+  paymentNumber: string;
 }
 
 export interface PremiumRequest {
   id: string;
   userId: string;
-  method: string;
-  senderNumber: string;
-  trxId: string;
+  userName: string;
   amount: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  transactionId: string;
+  method: string;
+  paymentFromNumber: string; 
+  status: TaskStatus;
   date: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userName: string;
+  subject: string;
+  message: string;
+  adminReply?: string;
+  status: 'OPEN' | 'CLOSED';
+  createdAt: string;
 }
 
 export interface Notification {
   id: string;
-  userId?: string; // If null, it's a global admin message
   title: string;
   message: string;
-  type: 'ADMIN' | 'INCOME' | 'SYSTEM';
+  image?: string;
+  link?: string;
+  linkName?: string;
+  type: 'TEXT' | 'IMAGE_TEXT' | 'IMAGE_LINK' | 'LINK_TEXT'; 
+  targetUserId?: string;
   date: string;
-  isRead: boolean;
+  readBy: string[];
 }
 
-export interface Settings {
+export interface VideoFolder {
+  id: string;
+  name: string; 
+  description?: string;
+  videos: {
+    id: string;
+    title: string;
+    url: string;
+    duration?: string;
+    description?: string; // Added description
+  }[];
+}
+
+export interface CustomPage {
+  id: string;
+  buttonName: string;
+  iconUrl: string;
+  htmlContent: string; 
+}
+
+export interface Tool {
+  id: string;
+  name: string;
+  iconUrl: string;
+  link: string;
+}
+
+export interface AppSettings {
   companyName: string;
-  notice: string;
-  landingText: string;
+  companyLogo: string;
+  founderName: string; 
+
+  landingDescription: string;
+  noticeText: string;
+  privacyLink: string;
+  appDownloadLink: string;
+  
+  supportConfig: {
+    freeWhatsappGroupLink: string;
+    freeTelegramChannelLink: string;
+    freeTelegramGroupLink: string;
+    premiumSupportGroupLink: string; 
+    premiumAdminWhatsapp: string;    
+    whatsappSupportLink: string; 
+    supportDescription: string;
+  };
+
+  facebookGroupLink: string; 
+  telegramLink: string; 
+  supportLink: string; 
   youtubeLink: string;
-  facebookLink: string;
-  telegramLink: string;
-  whatsappLink: string;
-  premiumCost: number;
-  refBonus: number;
-  contactNumber: string; // Used for payments
-  quizReward: number;
-  jobPointRate: number; 
-  darkMode: boolean;
-  privacyPolicy: string;
   
-  // New Admin Settings
-  regBonus: number;
-  isPremiumActive: boolean;
-  
-  // Task Settings
-  dailyFreeTaskLimit: number;
-  dailyPremiumTaskLimit: number;
-  isTaskSystemActive: boolean;
+  videoSessions: VideoFolder[];
 
-  // Social Rates
-  gmailRate: number;
-  facebookRate: number;
-  instagramRate: number;
-  tiktokRate: number;
-  
-  // Support Links
-  premiumGroupLink1: string;
-  premiumGroupLink2: string;
-  premiumGroupLink3: string;
-  supportNumber: string;
+  tutorialVideos: {
+    workVideo: string;
+    gmailVideo: string;
+    withdrawVideo: string;
+  };
 
-  // Images
+  premiumFee: number;
+  premiumDescription: string;
+  isPremiumActive?: boolean;
+
+  paymentNumbers: {
+    bkash: string;
+    nagad: string;
+    rocket: string;
+  };
   sliderImages: string[];
+  
+  socialSellConfig: {
+    gmailRate: number;
+    fbRate: number;
+    instaRate: number;
+    tiktokRate: number; 
+    isGmailOn: boolean;
+    isFbOn: boolean;
+    isInstaOn: boolean;
+    isTiktokOn: boolean; 
+  };
+
+  planLimits: {
+    freeAllowWithdraw: boolean; 
+    freeMaxWithdraw: number; 
+    freeGmailLimit: number; 
+    freeWalletMinWithdraw: number; 
+    // NEW FIELDS
+    premiumMaxWithdraw: number;
+    freeWithdrawFrequency: number; // How many times a free user can withdraw
+    isFreeWithdrawEnabled: boolean;
+    isMainWithdrawEnabled: boolean;
+    
+    freeDailyTaskLimit?: number;
+    premiumDailyTaskLimit?: number;
+
+    isFreeTasksEnabled?: boolean;
+    isPremiumTasksEnabled?: boolean;
+  };
+  
+  referralConfig: {
+    enabled: boolean;
+    signupBonus: number; 
+    quizRate: number; 
+    level1Bonus: number; 
+    quizAdLinks: string[]; // Unlimited links array
+    quizTimer?: number;
+  };
+  
+  withdrawRules: {
+    MAIN: { minWithdraw: number; feePercent: number; enabled: boolean };
+    FREE: { minWithdraw: number; feePercent: number; enabled: boolean };
+  };
+
+  messages: {
+    premiumPopup: string;
+    withdrawMessage: string;
+    freeJobInfo: string;
+    premiumBenefits: string[];
+  };
+  
+  jobWithdrawMethods: JobWithdrawMethod[]; 
+  customPages: CustomPage[]; 
+  tools: Tool[]; 
 }

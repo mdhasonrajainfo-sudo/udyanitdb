@@ -1,10 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+// @ts-ignore - Bypass potential missing exports in the environment
+import * as RRD from 'react-router-dom';
+const { useNavigate, useLocation } = RRD as any;
+
+// @ts-ignore - Bypass potential type mismatch for motion components in the environment
+import * as MotionModule from 'framer-motion';
+const { motion, AnimatePresence } = MotionModule as any;
+
 import { 
-  Menu, X, Smartphone, UserPlus, FileText, HelpCircle, 
+  Menu, X, Smartphone, UserPlus, FileText, CircleHelp, 
   Download, Youtube, Facebook, MessageCircle, ArrowRight, ArrowLeft,
   Lock, PlayCircle, Star, Shield, CheckCircle, 
   Instagram, Phone, Video, Headphones, User, Globe, Users,
@@ -54,8 +60,11 @@ export const LandingPage: React.FC = () => {
             <div className="flex items-center">
                {/* Simulating a Long Rectangular Logo */}
                <div className="flex items-center gap-2">
-                   <img src="https://files.catbox.moe/mmesk9.jpg" alt="Logo" className="w-8 h-8 object-contain" />
-                   <span className="font-black text-xl tracking-tighter text-gray-800">{settings.companyName.split('.')[0]}<span className="text-emerald-600">.com</span></span>
+                   <img src="https://files.catbox.moe/oq7gs8.jpg" alt="Logo" className="w-8 h-8 object-contain" />
+                   <span className="font-black text-xl tracking-tighter flex items-center">
+                        <span className="text-emerald-600">Next</span>
+                        <span className="text-gray-900">Level</span>
+                   </span>
                </div>
             </div>
             <div className="flex gap-2">
@@ -146,7 +155,7 @@ export const LandingPage: React.FC = () => {
                     <div className="relative z-10 w-2/3">
                         <div className="flex items-center gap-2 mb-2">
                             <div className="bg-white p-1 rounded-lg">
-                                <img src="https://files.catbox.moe/mmesk9.jpg" className="w-8 h-8 object-contain"/>
+                                <img src="https://files.catbox.moe/oq7gs8.jpg" className="w-8 h-8 object-contain"/>
                             </div>
                             <span className="text-white font-bold tracking-wider text-sm">{settings.companyName}</span>
                         </div>
@@ -185,22 +194,6 @@ export const LandingPage: React.FC = () => {
                         </div>
                     ))}
                 </div>
-            </section>
-
-            {/* CEO / Founder Profile */}
-            <section className="px-5 pb-10">
-                 <div className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full border-2 border-emerald-100 overflow-hidden flex-shrink-0">
-                         <img src="https://ui-avatars.com/api/?name=Founder&background=0D9488&color=fff" alt="CEO" className="w-full h-full object-cover"/>
-                    </div>
-                    <div>
-                        <h3 className="text-base font-bold text-gray-800">Md. Founder Name</h3>
-                        <p className="text-emerald-600 text-[10px] font-bold uppercase tracking-wider mb-1">Founder & CEO</p>
-                        <p className="text-gray-400 text-[10px] leading-tight">
-                            "Committed to 100% transparency and user satisfaction."
-                        </p>
-                    </div>
-                 </div>
             </section>
 
             {/* Social Media Links */}
@@ -372,7 +365,7 @@ export const LoginPage: React.FC = () => {
       {/* Branding */}
       <div className="flex justify-center mb-6">
           <div className="bg-white p-3 rounded-2xl shadow-sm">
-             <img src="https://files.catbox.moe/mmesk9.jpg" alt="Logo" className="w-12 h-12 object-contain" />
+             <img src="https://files.catbox.moe/oq7gs8.jpg" alt="Logo" className="w-12 h-12 object-contain" />
           </div>
       </div>
 
@@ -482,7 +475,7 @@ export const RegisterPage: React.FC = () => {
        {/* Branding */}
        <div className="flex justify-center mb-6">
           <div className="bg-white p-3 rounded-2xl shadow-sm">
-             <img src="https://files.catbox.moe/mmesk9.jpg" alt="Logo" className="w-12 h-12 object-contain" />
+             <img src="https://files.catbox.moe/oq7gs8.jpg" alt="Logo" className="w-12 h-12 object-contain" />
           </div>
        </div>
 

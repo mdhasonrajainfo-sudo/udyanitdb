@@ -1,53 +1,53 @@
 
-import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { StoreProvider } from './store';
-import { LandingPage, LoginPage, RegisterPage, SupportPage } from './pages/LandingAuth';
-import { 
-    UserDashboard, WalletPage, FreeJobPage, PremiumPage, QuizPage, 
-    TaskListPage, TeamPage, UserProfilePage, NotificationsPage, 
-    IncomeHistoryPage, WorkVideoPage, JobWithdrawPage, PremiumFormPage,
-    ToastProvider 
-} from './pages/UserApp';
-import { AdminDashboard } from './pages/AdminApp';
+import React, { useState, useEffect } from 'react';
+import { Landing } from './pages/Landing';
+import { Auth } from './pages/Auth';
+import { UserPanel } from './pages/UserPanel';
+import { AdminPanel } from './pages/AdminPanel';
+import { store } from './services/store';
 
-const App: React.FC = () => {
+function App() {
+  const [currentView, setCurrentView] = useState('landing'); 
+
+  const handleNavigate = (view: string) => {
+    setCurrentView(view);
+  };
+
+  const handleLoginSuccess = () => {
+    setCurrentView('user-dashboard');
+  };
+
+  const handleAdminLoginSuccess = () => {
+    setCurrentView('admin-dashboard');
+  };
+
+  const handleLogout = () => {
+    store.logout();
+    setCurrentView('landing');
+  };
+
   return (
-    <StoreProvider>
-      <ToastProvider>
-        <HashRouter>
-            <Routes>
-            {/* Public Routes - Landing Page is Default */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/support" element={<SupportPage />} />
+    <div>
+      {currentView === 'landing' && <Landing onNavigate={handleNavigate} />}
+      
+      {(currentView === 'login' || currentView === 'register') && (
+        <Auth 
+          view={currentView as any} 
+          onNavigate={handleNavigate} 
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
 
-            {/* User Routes */}
-            <Route path="/user/home" element={<UserDashboard />} />
-            <Route path="/user/wallet" element={<WalletPage />} />
-            <Route path="/user/free-job" element={<FreeJobPage />} />
-            <Route path="/user/tasks" element={<TaskListPage />} />
-            <Route path="/user/quiz" element={<QuizPage />} />
-            <Route path="/user/team" element={<TeamPage />} />
-            <Route path="/user/premium" element={<PremiumPage />} />
-            <Route path="/user/premium-form" element={<PremiumFormPage />} />
-            <Route path="/user/profile" element={<UserProfilePage />} />
-            <Route path="/user/notifications" element={<NotificationsPage />} />
-            <Route path="/user/income-history" element={<IncomeHistoryPage />} />
-            <Route path="/user/work-video" element={<WorkVideoPage />} />
-            <Route path="/user/job-withdraw" element={<JobWithdrawPage />} />
-
-            {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
-            {/* Force any unknown route to go to Landing Page */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </HashRouter>
-      </ToastProvider>
-    </StoreProvider>
+      {currentView === 'user-dashboard' && (
+        <UserPanel 
+          onLogout={handleLogout} 
+          onAdminLogin={() => setCurrentView('admin-dashboard')}
+        />
+      )}
+      
+      {currentView === 'admin-dashboard' && <AdminPanel onLogout={() => setCurrentView('user-dashboard')} />}
+    </div>
   );
-};
+}
 
 export default App;

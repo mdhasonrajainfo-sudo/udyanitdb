@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Task, TaskSubmission, Withdrawal, Ticket, Settings, UserStatus, PremiumRequest, Notification, JobWithdrawal, IncomeLog } from './types';
+import { User, Task, TaskSubmission, Withdrawal, Settings, UserStatus, PremiumRequest, Notification, JobWithdrawal, IncomeLog, SupportTicket } from './types';
 
 interface StoreContextType {
   currentUser: User | null;
@@ -10,61 +10,56 @@ interface StoreContextType {
   withdrawals: Withdrawal[];
   jobWithdrawals: JobWithdrawal[];
   incomeLogs: IncomeLog[];
-  tickets: Ticket[];
   premiumRequests: PremiumRequest[];
   notifications: Notification[];
+  tickets: SupportTicket[];
   settings: Settings;
   unreadCount: number;
   
-  // Actions
   login: (phone: string, pass: string) => Promise<boolean>;
   register: (data: any) => Promise<boolean>;
   logout: () => void;
   updateUser: (user: User) => void;
   deleteUser: (userId: string) => void;
-  addTask: (task: Task) => void;
-  deleteTask: (taskId: string) => void;
   submitTask: (submission: TaskSubmission) => void;
-  approveTask: (submissionId: string) => void;
-  rejectTask: (submissionId: string) => void;
   requestWithdraw: (withdrawal: Withdrawal) => void;
-  approveWithdraw: (withdrawalId: string) => void;
-  rejectWithdraw: (withdrawalId: string) => void;
   submitJobWithdraw: (jw: JobWithdrawal) => void;
   requestPremium: (req: PremiumRequest) => void;
-  approvePremium: (reqId: string) => void;
-  rejectPremium: (reqId: string) => void;
   markNotificationsRead: () => void;
-  toggleDarkMode: () => void;
+  addLog: (log: IncomeLog) => void;
+  submitTicket: (t: SupportTicket) => void;
   
-  // Admin Actions
+  approvePremium: (id: string) => void;
+  rejectPremium: (id: string) => void;
+  addTask: (task: Task) => void;
+  deleteTask: (id: string) => void;
+  approveTask: (id: string) => void;
+  rejectTask: (id: string) => void;
+  approveWithdraw: (id: string) => void;
+  rejectWithdraw: (id: string) => void;
+
   isAdmin: boolean;
   adminLogin: (phone: string, pass: string) => boolean;
   updateSettings: (s: Settings) => void;
-  submitTicket: (t: Ticket) => void;
-  addNotification: (n: Notification) => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
-// --- INITIAL SETTINGS ---
-
 const INITIAL_SETTINGS: Settings = {
   companyName: "UdyanIT",
-  notice: "আমাদের অ্যাপে স্বাগতম! রেফার করে এবং টাস্ক কমপ্লিট করে আনলিমিটেড ইনকাম করুন।",
+  notice: "আমাদের প্লাটফর্মে আপনাকে স্বাগতম! নিয়মিত কাজ করুন এবং রেফার করে ইনকাম বাড়ান।",
   landingText: "বিশ্বস্ত ইনকাম সোর্স, ১০০% পেমেন্ট গ্যারান্টি।",
   youtubeLink: "https://youtube.com",
   facebookLink: "https://facebook.com",
   telegramLink: "https://t.me",
-  whatsappLink: "https://wa.me/01700000000",
+  whatsappLink: "https://wa.me/017XXXXXXXX",
   premiumCost: 500,
   refBonus: 50,
-  contactNumber: "01700000000",
+  contactNumber: "017XXXXXXXX", 
   quizReward: 1,
-  jobPointRate: 0.10, // 1 point = 0.10 taka
+  jobPointRate: 0.10,
   darkMode: false,
-  privacyPolicy: "We value your privacy. All your data is secure with us. We do not share your personal information with third parties.\n\n1. Data Collection: We collect basic user info.\n2. Payments: Payments are processed manually within 24 hours.\n3. Termination: We reserve the right to ban users for fraudulent activities.",
-  
+  privacyPolicy: "আপনার ডাটা আমাদের কাছে নিরাপদ।",
   regBonus: 10,
   isPremiumActive: true,
   dailyFreeTaskLimit: 5,
@@ -74,73 +69,59 @@ const INITIAL_SETTINGS: Settings = {
   facebookRate: 15,
   instagramRate: 10,
   tiktokRate: 10,
-  premiumGroupLink1: "https://t.me/group1",
-  premiumGroupLink2: "https://t.me/group2",
-  premiumGroupLink3: "https://t.me/group3",
-  supportNumber: "01700000000",
+  supportNumber: "017XXXXXXXX",
   sliderImages: [
-      "https://picsum.photos/600/300?random=1",
-      "https://picsum.photos/600/300?random=2",
-      "https://picsum.photos/600/300?random=3",
-      "https://picsum.photos/600/300?random=4"
-  ]
+      "https://files.catbox.moe/v7r386.jpg",
+      "https://files.catbox.moe/p99cwy.jpg",
+      "https://files.catbox.moe/v7r386.jpg"
+  ],
+  premiumGroupLink1: "https://t.me/premium1",
+  premiumGroupLink2: "https://t.me/premium2"
 };
 
-// --- DEMO ADMIN USER ---
-// Note: Admin RefCode set to '123456' as per instructions for default fallback
-const ADMIN_USER: User = {
-    id: 'admin_master',
-    name: 'Super Admin',
+// Default Admin User to fix 123456 referral code issue
+const DEFAULT_ADMIN: User = {
+    id: 'admin-main',
+    name: 'Admin Boss',
     phone: '01772209016',
-    email: 'admin@udyanit.com',
-    password: '123456',
-    refCode: '123456', 
+    email: 'admin@app.com',
+    password: 'admin',
+    refCode: '123456',
     uplineCode: '',
-    status: 'PREMIUM', // Changed from Enum
-    balanceFree: 10000,
-    balancePremium: 50000,
-    joinDate: '2023-01-01',
+    status: 'PREMIUM',
+    balanceFree: 0,
+    balancePremium: 0,
+    balanceDeposit: 0,
+    joinDate: '2024-01-01',
     isBlocked: false,
     refBonusReceived: 0,
     quizBalance: 100,
     withdrawCount: 0,
     totalWithdraw: 0,
     todayIncome: 0,
-    totalIncome: 60000,
-    profilePic: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+    totalIncome: 0,
+    totalReferralIncome: 0,
+    totalGmailSells: 0,
+    totalTypingJobs: 0,
+    totalRecharges: 0,
+    todayTypingIncome: 0,
+    totalTypingIncome: 0
 };
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize from LocalStorage or use ADMIN_USER as default if empty
   const [users, setUsers] = useState<User[]>(() => {
-    try {
-      const savedUsers = localStorage.getItem('app_users');
-      if (savedUsers) {
-          const parsed = JSON.parse(savedUsers);
-          // Ensure Admin exists and has correct refCode
-          const existingAdmin = parsed.find((u: User) => u.phone === '01772209016');
-          if (!existingAdmin) {
-              return [ADMIN_USER, ...parsed];
-          } else if (existingAdmin.refCode !== '123456') {
-              // Fix admin ref code if it was different previously
-              const fixedUsers = parsed.map((u: User) => u.phone === '01772209016' ? ADMIN_USER : u);
-              return fixedUsers;
-          }
-          return parsed;
-      }
-      return [ADMIN_USER];
-    } catch (e) {
-      return [ADMIN_USER];
+    const saved = localStorage.getItem('app_users');
+    const parsed = saved ? JSON.parse(saved) : [];
+    // Ensure admin user exists for 123456 referral
+    if (!parsed.find((u: User) => u.refCode === '123456')) {
+        return [DEFAULT_ADMIN, ...parsed];
     }
+    return parsed;
   });
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    try {
-      const savedUser = localStorage.getItem('app_currentUser');
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (e) {
-      return null;
-    }
+    const saved = localStorage.getItem('app_currentUser');
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -149,38 +130,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [jobWithdrawals, setJobWithdrawals] = useState<JobWithdrawal[]>([]);
   const [incomeLogs, setIncomeLogs] = useState<IncomeLog[]>([]);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [premiumRequests, setPremiumRequests] = useState<PremiumRequest[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [settings, setSettings] = useState<Settings>(INITIAL_SETTINGS);
 
-  const saveUsers = (newUsers: User[]) => {
-    setUsers(newUsers);
-    localStorage.setItem('app_users', JSON.stringify(newUsers));
-  };
-
-  const addNotification = (n: Notification) => setNotifications(prev => [n, ...prev]);
+  useEffect(() => {
+    localStorage.setItem('app_users', JSON.stringify(users));
+  }, [users]);
 
   const login = async (phone: string, pass: string) => {
     const user = users.find(u => u.phone === phone && u.password === pass);
-    if (user) {
-      if (user.isBlocked) {
-        alert("Account is Blocked. Contact Admin.");
-        return false;
-      }
+    if (user && !user.isBlocked) {
       setCurrentUser(user);
       localStorage.setItem('app_currentUser', JSON.stringify(user));
-      
-      // Auto Notification on Login
-      addNotification({
-          id: Date.now().toString(),
-          userId: user.id,
-          title: 'Welcome Back!',
-          message: `Successfully logged in at ${new Date().toLocaleTimeString()}`,
-          type: 'SYSTEM',
-          date: new Date().toISOString(),
-          isRead: false
-      });
       return true;
     }
     return false;
@@ -196,76 +159,46 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const register = async (data: any) => {
     if (users.find(u => u.phone === data.phone)) {
-      alert("Error: Phone number already registered!");
-      return false;
+        alert("Phone already registered!");
+        return false;
     }
-    
-    // Strict Referral Check
-    if (!data.refCode) {
-        alert("Error: Referral Code is REQUIRED.");
+    const upline = users.find(u => u.refCode === data.refCode);
+    if (!upline) {
+        alert("Invalid Referral Code! Use 123456 as default.");
         return false;
     }
 
-    const upline = users.find(u => u.refCode === data.refCode);
-    
-    if (!upline) {
-      alert("Error: Invalid Referral Code. Please enter a valid code (e.g., 123456 for Admin).");
-      return false;
-    }
-
-    // New User
     const newUser: User = {
       id: Date.now().toString(),
       ...data,
       balanceFree: settings.regBonus,
       balancePremium: 0,
-      status: 'FREE', // Changed from Enum
+      balanceDeposit: 0,
+      status: 'FREE', 
       joinDate: new Date().toISOString().split('T')[0],
       isBlocked: false,
       refBonusReceived: 0,
       withdrawCount: 0,
       totalWithdraw: 0,
       todayIncome: 0,
-      totalIncome: 0,
+      totalIncome: settings.regBonus,
+      totalReferralIncome: 0,
+      totalGmailSells: 0,
+      totalTypingJobs: 0,
+      totalRecharges: 0,
+      todayTypingIncome: 0,
+      totalTypingIncome: 0,
       refCode: Math.floor(100000 + Math.random() * 900000).toString(),
-      profilePic: '',
       quizBalance: 2,
       uplineCode: data.refCode
     };
 
-    let updatedUsers = [...users, newUser];
-
-    // Give Bonus Quiz to Upline
-    if (upline) {
-        const updatedUpline = { ...upline, quizBalance: (upline.quizBalance || 0) + 2 };
-        updatedUsers = updatedUsers.map(u => u.id === upline.id ? updatedUpline : u);
-        // Notify Upline
-        addNotification({
-            id: Date.now().toString(),
-            userId: upline.id,
-            title: 'New Referral',
-            message: `New user ${newUser.name} joined using your code. You got 2 Quizzes!`,
-            type: 'INCOME',
-            date: new Date().toISOString(),
-            isRead: false
-        });
-    }
-
-    saveUsers(updatedUsers);
+    setUsers(prev => prev.map(u => 
+        u.id === upline.id ? { ...u, quizBalance: (u.quizBalance || 0) + 2 } : u
+    ).concat(newUser));
+    
     setCurrentUser(newUser);
     localStorage.setItem('app_currentUser', JSON.stringify(newUser));
-
-    // Welcome Notification
-    addNotification({
-        id: Date.now().toString(),
-        userId: newUser.id,
-        title: 'Welcome to UdyanIT',
-        message: 'Registration successful! Start earning by completing tasks.',
-        type: 'SYSTEM',
-        date: new Date().toISOString(),
-        isRead: false
-    });
-
     return true;
   };
 
@@ -276,265 +209,89 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateUser = (updatedUser: User) => {
-    const newUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
-    saveUsers(newUsers);
-    
+    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
     if (currentUser?.id === updatedUser.id) {
       setCurrentUser(updatedUser);
       localStorage.setItem('app_currentUser', JSON.stringify(updatedUser));
     }
   };
 
-  const deleteUser = (userId: string) => {
-      const newUsers = users.filter(u => u.id !== userId);
-      saveUsers(newUsers);
-  }
+  const submitTask = (sub: TaskSubmission) => setSubmissions(prev => [sub, ...prev]);
+  const requestWithdraw = (w: Withdrawal) => setWithdrawals(prev => [w, ...prev]);
+  const submitJobWithdraw = (jw: JobWithdrawal) => setJobWithdrawals(prev => [jw, ...prev]);
+  const requestPremium = (req: PremiumRequest) => setPremiumRequests(prev => [req, ...prev]);
+  const addLog = (log: IncomeLog) => setIncomeLogs(prev => [log, ...prev]);
+  const submitTicket = (t: SupportTicket) => setTickets(prev => [t, ...prev]);
 
-  const requestPremium = (req: PremiumRequest) => {
-      setPremiumRequests([req, ...premiumRequests]);
-      addNotification({
-          id: Date.now().toString(),
-          userId: req.userId,
-          title: 'Premium Request Sent',
-          message: 'Please wait for admin approval.',
-          type: 'SYSTEM',
-          date: new Date().toISOString(),
-          isRead: false
-      });
-  };
-
-  const approvePremium = (reqId: string) => {
-    const req = premiumRequests.find(r => r.id === reqId);
-    if(req && req.status === 'PENDING') {
-        const updatedReq = { ...req, status: 'APPROVED' as const };
-        setPremiumRequests(premiumRequests.map(r => r.id === reqId ? updatedReq : r));
-        
-        const user = users.find(u => u.id === req.userId);
-        if(user) {
-            const updatedUser = { ...user, status: 'PREMIUM' as UserStatus }; // Changed from Enum
-            
-            const upline = users.find(u => u.refCode === user.uplineCode);
-            let newUsers = [...users];
-
-            if(upline) {
-                const updatedUpline = { 
-                    ...upline, 
-                    balancePremium: upline.balancePremium + settings.refBonus, 
-                    todayIncome: upline.todayIncome + settings.refBonus,
-                    totalIncome: upline.totalIncome + settings.refBonus,
-                    refBonusReceived: upline.refBonusReceived + settings.refBonus
-                };
-                newUsers = newUsers.map(u => u.id === upline.id ? updatedUpline : u);
-                setIncomeLogs(prev => [...prev, { id: Date.now().toString(), userId: upline.id, amount: settings.refBonus, source: 'Premium Referral Bonus', date: new Date().toISOString() }]);
-            }
-
-            newUsers = newUsers.map(u => u.id === user.id ? updatedUser : u);
-            saveUsers(newUsers);
-
-            if (currentUser?.id === user.id) {
-                setCurrentUser(updatedUser);
-                localStorage.setItem('app_currentUser', JSON.stringify(updatedUser));
-            }
-            
-            // Notify User
-            addNotification({
-                id: Date.now().toString(),
-                userId: user.id,
-                title: 'Premium Approved',
-                message: 'Congratulations! You are now a Premium Member.',
-                type: 'SYSTEM',
-                date: new Date().toISOString(),
-                isRead: false
-            });
-        }
-    }
-  };
-
-  const rejectPremium = (reqId: string) => {
-      const req = premiumRequests.find(r => r.id === reqId);
-      setPremiumRequests(premiumRequests.map(r => r.id === reqId ? { ...r, status: 'REJECTED' } : r));
-      if(req) {
-          addNotification({
-                id: Date.now().toString(),
-                userId: req.userId,
-                title: 'Premium Rejected',
-                message: 'Your premium request was rejected. Contact support.',
-                type: 'SYSTEM',
-                date: new Date().toISOString(),
-                isRead: false
-            });
-      }
-  };
-
-  const submitTask = (submission: TaskSubmission) => {
-    setSubmissions([submission, ...submissions]);
-    addNotification({
-        id: Date.now().toString(),
-        userId: submission.userId,
-        title: 'Task Submitted',
-        message: `Task "${submission.taskTitle}" submitted for review.`,
-        type: 'SYSTEM',
-        date: new Date().toISOString(),
-        isRead: false
-    });
-  };
-
-  const approveTask = (submissionId: string) => {
-    const sub = submissions.find(s => s.id === submissionId);
-    if (sub && sub.status === 'PENDING') {
-      const updatedSub = { ...sub, status: 'APPROVED' as const };
-      setSubmissions(submissions.map(s => s.id === submissionId ? updatedSub : s));
-
-      const user = users.find(u => u.id === sub.userId);
-      if (user) {
-        const isPremiumTask = tasks.find(t => t.id === sub.taskId)?.type === 'PREMIUM';
-        const updatedUser = {
-          ...user,
-          balanceFree: isPremiumTask ? user.balanceFree : user.balanceFree + sub.amount,
-          balancePremium: isPremiumTask ? user.balancePremium + sub.amount : user.balancePremium,
-          todayIncome: user.todayIncome + sub.amount,
-          totalIncome: user.totalIncome + sub.amount
-        };
-        updateUser(updatedUser);
-        
-        addNotification({
-            id: Date.now().toString(),
-            userId: user.id,
-            title: 'Task Approved',
-            message: `You earned ৳${sub.amount} from task.`,
-            type: 'INCOME',
-            date: new Date().toISOString(),
-            isRead: false
-        });
-        setIncomeLogs(prev => [...prev, { id: Date.now().toString(), userId: user.id, amount: sub.amount, source: `Task: ${sub.taskTitle || 'Job'}`, date: new Date().toISOString() }]);
-      }
-    }
-  };
-
-  const rejectTask = (submissionId: string) => {
-    const sub = submissions.find(s => s.id === submissionId);
-    setSubmissions(submissions.map(s => s.id === submissionId ? { ...s, status: 'REJECTED' } : s));
-    if(sub) {
-        addNotification({
-            id: Date.now().toString(),
-            userId: sub.userId,
-            title: 'Task Rejected',
-            message: `Task "${sub.taskTitle}" was rejected. Check details.`,
-            type: 'SYSTEM',
-            date: new Date().toISOString(),
-            isRead: false
-        });
-    }
-  };
-
-  const requestWithdraw = (withdrawal: Withdrawal) => {
-    setWithdrawals([withdrawal, ...withdrawals]);
-    const user = users.find(u => u.id === withdrawal.userId);
+  const approvePremium = (id: string) => {
+    const req = premiumRequests.find(r => r.id === id);
+    if (!req) return;
+    setPremiumRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'APPROVED' } : r));
+    const user = users.find(u => u.id === req.userId);
     if (user) {
-        const updatedUser = {
-            ...user,
-            balanceFree: withdrawal.type === 'FREE_WALLET' ? user.balanceFree - withdrawal.amount : user.balanceFree,
-            balancePremium: withdrawal.type === 'PREMIUM_WALLET' ? user.balancePremium - withdrawal.amount : user.balancePremium
-        };
-        updateUser(updatedUser);
-        addNotification({
-            id: Date.now().toString(),
-            userId: user.id,
-            title: 'Withdrawal Pending',
-            message: `Withdrawal of ৳${withdrawal.amount} requested.`,
-            type: 'SYSTEM',
-            date: new Date().toISOString(),
-            isRead: false
-        });
+      updateUser({ ...user, status: 'PREMIUM' });
     }
   };
 
-  const approveWithdraw = (withdrawalId: string) => {
-      const w = withdrawals.find(wd => wd.id === withdrawalId);
-      if(w) {
-          setWithdrawals(withdrawals.map(wd => wd.id === withdrawalId ? { ...wd, status: 'APPROVED' } : wd));
-          const user = users.find(u => u.id === w.userId);
-          if(user) {
-              const updatedUser = {
-                  ...user,
-                  withdrawCount: user.withdrawCount + 1,
-                  totalWithdraw: user.totalWithdraw + w.amount,
-              };
-              updateUser(updatedUser);
-              addNotification({
-                id: Date.now().toString(),
-                userId: user.id,
-                title: 'Withdrawal Approved',
-                message: `Your withdrawal of ৳${w.amount} has been sent.`,
-                type: 'INCOME',
-                date: new Date().toISOString(),
-                isRead: false
-            });
-          }
-      }
+  const rejectPremium = (id: string) => {
+    setPremiumRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'REJECTED' } : r));
   };
 
-  const rejectWithdraw = (withdrawalId: string) => {
-      const w = withdrawals.find(wd => wd.id === withdrawalId);
-      if (w) {
-        setWithdrawals(withdrawals.map(wd => wd.id === withdrawalId ? { ...wd, status: 'REJECTED' } : wd));
-        const user = users.find(u => u.id === w.userId);
-        if(user) {
-            const updatedUser = {
-                ...user,
-                balanceFree: w.type === 'FREE_WALLET' ? user.balanceFree + w.amount : user.balanceFree,
-                balancePremium: w.type === 'PREMIUM_WALLET' ? user.balancePremium + w.amount : user.balancePremium
-            };
-            updateUser(updatedUser);
-            addNotification({
-                id: Date.now().toString(),
-                userId: user.id,
-                title: 'Withdrawal Rejected',
-                message: `Withdrawal of ৳${w.amount} rejected and refunded.`,
-                type: 'SYSTEM',
-                date: new Date().toISOString(),
-                isRead: false
-            });
-        }
-      }
-  }
+  const addTask = (task: Task) => setTasks(prev => [task, ...prev]);
+  const deleteTask = (id: string) => setTasks(prev => prev.filter(t => t.id !== id));
 
-  const submitJobWithdraw = (jw: JobWithdrawal) => {
-      setJobWithdrawals([jw, ...jobWithdrawals]);
-      addNotification({
+  const approveTask = (id: string) => {
+    const sub = submissions.find(s => s.id === id);
+    if (!sub) return;
+    setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status: 'APPROVED' } : s));
+    const user = users.find(u => u.id === sub.userId);
+    if (user) {
+      updateUser({ 
+        ...user, 
+        balanceFree: user.balanceFree + sub.amount,
+        totalIncome: user.totalIncome + sub.amount 
+      });
+      addLog({
         id: Date.now().toString(),
-        userId: jw.userId,
-        title: 'Job Withdraw Sent',
-        message: `Job withdrawal request for ${jw.points} points sent.`,
-        type: 'SYSTEM',
+        userId: user.id,
+        amount: sub.amount,
+        source: `Task Approved: ${sub.taskTitle || 'Bounty'}`,
         date: new Date().toISOString(),
-        isRead: false
-    });
-  }
+        type: 'INCOME'
+      });
+    }
+  };
 
-  const addTask = (task: Task) => setTasks([...tasks, task]);
-  const deleteTask = (taskId: string) => setTasks(tasks.filter(t => t.id !== taskId));
-  
-  const markNotificationsRead = () => {
-      setNotifications(notifications.map(n => ({...n, isRead: true})));
-  }
+  const rejectTask = (id: string) => {
+    setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status: 'REJECTED' } : s));
+  };
 
-  const toggleDarkMode = () => {
-      setSettings({...settings, darkMode: !settings.darkMode});
-  }
+  const approveWithdraw = (id: string) => {
+    setWithdrawals(prev => prev.map(w => w.id === id ? { ...w, status: 'APPROVED' } : w));
+  };
 
+  const rejectWithdraw = (id: string) => {
+    const w = withdrawals.find(withdraw => withdraw.id === id);
+    if (!w) return;
+    setWithdrawals(prev => prev.map(withdraw => withdraw.id === id ? { ...withdraw, status: 'REJECTED' } : withdraw));
+    const user = users.find(u => u.id === w.userId);
+    if (user) {
+      if (w.type === 'FREE_WALLET') updateUser({ ...user, balanceFree: user.balanceFree + w.amount });
+      else if (w.type === 'PREMIUM_WALLET') updateUser({ ...user, balancePremium: user.balancePremium + w.amount });
+      else if (w.type === 'DEPOSIT_WALLET') updateUser({ ...user, balanceDeposit: user.balanceDeposit + w.amount });
+    }
+  };
+
+  const markNotificationsRead = () => setNotifications(prev => prev.map(n => ({...n, isRead: true})));
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <StoreContext.Provider value={{
-      currentUser, users, tasks, submissions, withdrawals, jobWithdrawals, incomeLogs, tickets, premiumRequests, notifications, settings, isAdmin, unreadCount,
-      login, register, logout, updateUser, deleteUser,
-      addTask, deleteTask,
-      submitTask, approveTask, rejectTask,
-      requestWithdraw, approveWithdraw, rejectWithdraw, submitJobWithdraw,
-      requestPremium, approvePremium, rejectPremium,
-      submitTicket: (t) => setTickets([...tickets, t]),
-      addNotification, markNotificationsRead, adminLogin, updateSettings: setSettings, toggleDarkMode
+      currentUser, users, tasks, submissions, withdrawals, jobWithdrawals, incomeLogs, premiumRequests, notifications, tickets, settings, isAdmin, unreadCount,
+      login, register, logout, updateUser, deleteUser: (id) => setUsers(prev => prev.filter(u => u.id !== id)),
+      submitTask, requestWithdraw, submitJobWithdraw, requestPremium, addLog, submitTicket,
+      approvePremium, rejectPremium, addTask, deleteTask, approveTask, rejectTask, approveWithdraw, rejectWithdraw,
+      markNotificationsRead, adminLogin, updateSettings: setSettings
     }}>
       {children}
     </StoreContext.Provider>
