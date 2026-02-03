@@ -101,7 +101,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
            </span>
         </div>
         <h1 className="text-4xl font-extrabold text-slate-800 leading-tight">
-          সহজ কাজ করে <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">টাকা ইনকাম</span> করুন
+          सहজ কাজ করে <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">টাকা ইনকাম</span> করুন
         </h1>
         <p className="text-gray-600 text-sm leading-relaxed max-w-md mx-auto">
           {settings.landingDescription}

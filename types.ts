@@ -284,3 +284,20 @@ export interface AppSettings {
   customPages: CustomPage[]; 
   tools: Tool[]; 
 }
+
+/**
+ * Missing types required by store.tsx
+ */
+
+export type Withdrawal = WithdrawRequest;
+export type Settings = AppSettings;
+export type JobWithdrawal = JobWithdrawRequest;
+
+export interface IncomeLog {
+  id: string;
+  userId: string;
+  amount: number;
+  source: string;
+  date: string;
+  type: 'INCOME' | 'EXPENSE';
+}

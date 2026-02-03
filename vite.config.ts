@@ -16,7 +16,8 @@ export default defineConfig(({ mode }) => {
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '.'),
+          // Fixed: Use path.resolve('.') instead of process.cwd() to resolve the absolute path, avoiding type conflicts with the global 'process' object.
+          '@': path.resolve('.'),
         }
       }
     };

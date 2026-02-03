@@ -47,65 +47,105 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const INITIAL_SETTINGS: Settings = {
   companyName: "UdyanIT",
-  notice: "আমাদের প্লাটফর্মে আপনাকে স্বাগতম! নিয়মিত কাজ করুন এবং রেফার করে ইনকাম বাড়ান।",
-  landingText: "বিশ্বস্ত ইনকাম সোর্স, ১০০% পেমেন্ট গ্যারান্টি।",
+  noticeText: "আমাদের প্লাটফর্মে আপনাকে স্বাগতম! নিয়মিত কাজ করুন এবং রেফার করে ইনকাম বাড়ান।",
+  landingDescription: "বিশ্বস্ত ইনকাম সোর্স, ১০০% পেমেন্ট গ্যারান্টি।",
   youtubeLink: "https://youtube.com",
-  facebookLink: "https://facebook.com",
+  facebookGroupLink: "https://facebook.com",
   telegramLink: "https://t.me",
-  whatsappLink: "https://wa.me/017XXXXXXXX",
-  premiumCost: 500,
-  refBonus: 50,
-  contactNumber: "017XXXXXXXX", 
-  quizReward: 1,
-  jobPointRate: 0.10,
-  darkMode: false,
-  privacyPolicy: "আপনার ডাটা আমাদের কাছে নিরাপদ।",
-  regBonus: 10,
-  isPremiumActive: true,
-  dailyFreeTaskLimit: 5,
-  dailyPremiumTaskLimit: 20,
-  isTaskSystemActive: true,
-  gmailRate: 5,
-  facebookRate: 15,
-  instagramRate: 10,
-  tiktokRate: 10,
-  supportNumber: "017XXXXXXXX",
+  supportLink: "https://wa.me/017XXXXXXXX",
+  premiumFee: 500,
+  premiumDescription: "প্রিমিয়াম মেম্বার হয়ে আনলিমিটেড ইনকাম করুন।",
+  founderName: "Admin",
+  companyLogo: "https://files.catbox.moe/oq7gs8.jpg",
+  privacyLink: "#",
+  appDownloadLink: "#",
+  supportConfig: {
+    freeWhatsappGroupLink: "#",
+    freeTelegramChannelLink: "#",
+    freeTelegramGroupLink: "#",
+    premiumSupportGroupLink: "#",
+    premiumAdminWhatsapp: "017XXXXXXXX",
+    whatsappSupportLink: "https://wa.me/017XXXXXXXX",
+    supportDescription: "support"
+  },
+  videoSessions: [],
+  tutorialVideos: {
+    workVideo: "",
+    gmailVideo: "",
+    withdrawVideo: ""
+  },
+  paymentNumbers: {
+    bkash: "017XXXXXXXX",
+    nagad: "017XXXXXXXX",
+    rocket: "017XXXXXXXX"
+  },
   sliderImages: [
       "https://files.catbox.moe/v7r386.jpg",
-      "https://files.catbox.moe/p99cwy.jpg",
-      "https://files.catbox.moe/v7r386.jpg"
+      "https://files.catbox.moe/p99cwy.jpg"
   ],
-  premiumGroupLink1: "https://t.me/premium1",
-  premiumGroupLink2: "https://t.me/premium2"
+  socialSellConfig: {
+    gmailRate: 5,
+    fbRate: 15,
+    instaRate: 10,
+    tiktokRate: 10,
+    isGmailOn: true,
+    isFbOn: true,
+    isInstaOn: true,
+    isTiktokOn: true
+  },
+  planLimits: {
+    freeAllowWithdraw: true,
+    freeMaxWithdraw: 500,
+    freeGmailLimit: 5,
+    freeWalletMinWithdraw: 50,
+    premiumMaxWithdraw: 10000,
+    freeWithdrawFrequency: 2,
+    isFreeWithdrawEnabled: true,
+    isMainWithdrawEnabled: true,
+    freeDailyTaskLimit: 5,
+    premiumDailyTaskLimit: 20,
+    isFreeTasksEnabled: true,
+    isPremiumTasksEnabled: true
+  },
+  referralConfig: {
+    enabled: true,
+    signupBonus: 10,
+    quizRate: 1,
+    level1Bonus: 50,
+    quizAdLinks: ["https://google.com"],
+    quizTimer: 30
+  },
+  withdrawRules: {
+    MAIN: { minWithdraw: 100, feePercent: 2, enabled: true },
+    FREE: { minWithdraw: 50, feePercent: 0, enabled: true },
+  },
+  messages: {
+    premiumPopup: "প্রিমিয়াম করুন",
+    withdrawMessage: "উত্তোলন সফল",
+    freeJobInfo: "ফ্রি কাজ",
+    premiumBenefits: ["বেশি ইনকাম", "দ্রুত পেমেন্ট"]
+  },
+  jobWithdrawMethods: [],
+  customPages: [],
+  tools: []
 };
 
-// Default Admin User to fix 123456 referral code issue
+// Fixed DEFAULT_ADMIN to match User interface in types.ts
 const DEFAULT_ADMIN: User = {
     id: 'admin-main',
     name: 'Admin Boss',
-    phone: '01772209016',
+    whatsapp: '01772209016',
     email: 'admin@app.com',
     password: 'admin',
-    refCode: '123456',
-    uplineCode: '',
-    status: 'PREMIUM',
+    referralCode: '123456',
+    referrerId: '',
+    status: 'ACTIVE',
+    accountType: 'PREMIUM',
     balanceFree: 0,
-    balancePremium: 0,
-    balanceDeposit: 0,
-    joinDate: '2024-01-01',
-    isBlocked: false,
-    refBonusReceived: 0,
-    quizBalance: 100,
-    withdrawCount: 0,
-    totalWithdraw: 0,
-    todayIncome: 0,
-    totalIncome: 0,
-    totalReferralIncome: 0,
-    totalGmailSells: 0,
-    totalTypingJobs: 0,
-    totalRecharges: 0,
-    todayTypingIncome: 0,
-    totalTypingIncome: 0
+    balanceMain: 0,
+    pendingReferralBonus: 0,
+    joiningDate: '2024-01-01',
+    isAdminAccess: true
 };
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -113,7 +153,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('app_users');
     const parsed = saved ? JSON.parse(saved) : [];
     // Ensure admin user exists for 123456 referral
-    if (!parsed.find((u: User) => u.refCode === '123456')) {
+    if (!parsed.find((u: User) => u.referralCode === '123456')) {
         return [DEFAULT_ADMIN, ...parsed];
     }
     return parsed;
@@ -140,8 +180,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [users]);
 
   const login = async (phone: string, pass: string) => {
-    const user = users.find(u => u.phone === phone && u.password === pass);
-    if (user && !user.isBlocked) {
+    const user = users.find(u => u.whatsapp === phone && u.password === pass);
+    if (user && user.status !== 'BLOCKED') {
       setCurrentUser(user);
       localStorage.setItem('app_currentUser', JSON.stringify(user));
       return true;
@@ -158,43 +198,35 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const register = async (data: any) => {
-    if (users.find(u => u.phone === data.phone)) {
+    if (users.find(u => u.whatsapp === data.phone)) {
         alert("Phone already registered!");
         return false;
     }
-    const upline = users.find(u => u.refCode === data.refCode);
+    const upline = users.find(u => u.referralCode === data.refCode);
     if (!upline) {
         alert("Invalid Referral Code! Use 123456 as default.");
         return false;
     }
 
+    // Updated newUser to match User interface
     const newUser: User = {
       id: Date.now().toString(),
-      ...data,
-      balanceFree: settings.regBonus,
-      balancePremium: 0,
-      balanceDeposit: 0,
-      status: 'FREE', 
-      joinDate: new Date().toISOString().split('T')[0],
-      isBlocked: false,
-      refBonusReceived: 0,
-      withdrawCount: 0,
-      totalWithdraw: 0,
-      todayIncome: 0,
-      totalIncome: settings.regBonus,
-      totalReferralIncome: 0,
-      totalGmailSells: 0,
-      totalTypingJobs: 0,
-      totalRecharges: 0,
-      todayTypingIncome: 0,
-      totalTypingIncome: 0,
-      refCode: Math.floor(100000 + Math.random() * 900000).toString(),
-      quizBalance: 2,
-      uplineCode: data.refCode
+      name: data.name,
+      whatsapp: data.phone,
+      email: data.email,
+      password: data.password,
+      balanceFree: settings.referralConfig.signupBonus,
+      balanceMain: 0,
+      status: 'ACTIVE', 
+      accountType: 'FREE',
+      joiningDate: new Date().toISOString().split('T')[0],
+      pendingReferralBonus: 0,
+      referralCode: Math.floor(100000 + Math.random() * 900000).toString(),
+      referrerId: upline.id
     };
 
     setUsers(prev => prev.map(u => 
-        u.id === upline.id ? { ...u, quizBalance: (u.quizBalance || 0) + 2 } : u
+        u.id === upline.id ? { ...u, pendingReferralBonus: (u.pendingReferralBonus || 0) + 2 } : u
     ).concat(newUser));
     
     setCurrentUser(newUser);
@@ -229,7 +261,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setPremiumRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'APPROVED' } : r));
     const user = users.find(u => u.id === req.userId);
     if (user) {
-      updateUser({ ...user, status: 'PREMIUM' });
+      updateUser({ ...user, accountType: 'PREMIUM' });
     }
   };
 
@@ -248,8 +280,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (user) {
       updateUser({ 
         ...user, 
-        balanceFree: user.balanceFree + sub.amount,
-        totalIncome: user.totalIncome + sub.amount 
+        balanceFree: user.balanceFree + sub.amount
       });
       addLog({
         id: Date.now().toString(),
@@ -276,14 +307,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setWithdrawals(prev => prev.map(withdraw => withdraw.id === id ? { ...withdraw, status: 'REJECTED' } : withdraw));
     const user = users.find(u => u.id === w.userId);
     if (user) {
-      if (w.type === 'FREE_WALLET') updateUser({ ...user, balanceFree: user.balanceFree + w.amount });
-      else if (w.type === 'PREMIUM_WALLET') updateUser({ ...user, balancePremium: user.balancePremium + w.amount });
-      else if (w.type === 'DEPOSIT_WALLET') updateUser({ ...user, balanceDeposit: user.balanceDeposit + w.amount });
+      if (w.walletType === 'FREE') updateUser({ ...user, balanceFree: user.balanceFree + w.amount });
+      else if (w.walletType === 'MAIN') updateUser({ ...user, balanceMain: user.balanceMain + w.amount });
     }
   };
 
-  const markNotificationsRead = () => setNotifications(prev => prev.map(n => ({...n, isRead: true})));
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const markNotificationsRead = () => setNotifications(prev => prev.map(n => ({...n, readBy: [...n.readBy, currentUser?.id || '']})));
+  const unreadCount = notifications.filter(n => !n.readBy.includes(currentUser?.id || '')).length;
 
   return (
     <StoreContext.Provider value={{

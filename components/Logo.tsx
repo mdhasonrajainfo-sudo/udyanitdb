@@ -9,14 +9,12 @@ export const Logo = ({ className = "", size = "normal" }: { className?: string, 
 
   return (
     <div className={`flex items-center gap-2 select-none ${className}`}>
-      {/* Dynamic Logo from settings */}
+      {/* Dynamic Logo from settings - updated to new URL provided by user */}
       <img 
-        src={settings.companyLogo || "https://files.catbox.moe/wmtnik.jpg"} 
-        alt={settings.companyName || "UdyanIT"} 
+        src={settings.companyLogo || "https://files.catbox.moe/oq7gs8.jpg"} 
+        alt={settings.companyName || "UdyanIT.com"} 
         className={`${imgHeight} object-contain mix-blend-multiply`}
       />
-      {/* Optionally show name if needed, but logo usually contains text */}
-      {/* <span className="font-bold text-gray-800">{settings.companyName}</span> */}
     </div>
   );
 };
